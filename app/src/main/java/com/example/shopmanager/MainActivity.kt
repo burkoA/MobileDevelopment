@@ -2,7 +2,6 @@ package com.example.shopmanager
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,10 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.example.shopmanager.ui.theme.ShopManagerTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,10 +35,11 @@ class MainActivity : ComponentActivity() {
             ShopManagerTheme {
                 Surface (modifier = Modifier.fillMaxSize()) {
                     val preferences = remember { PreferencesManager(this) }
-                    val currentFontSize = remember { mutableStateOf(preferences.getData("fontSize")) }
-
+                    val currentFontSize = remember { mutableStateOf(preferences.getFontSize("fontSize")) }
+                    val currentButtonColor = remember { mutableStateOf(preferences.getButtonColor("buttonColor")) }
                     Greeting(
-                        fontSize = currentFontSize.value
+                        fontSize = currentFontSize.value,
+                        buttonColor = currentButtonColor.value
                     )
                 }
             }
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(fontSize: Float) {
+fun Greeting(fontSize: Float, buttonColor: String) {
     val context = LocalContext.current
 
     Column(
@@ -69,7 +70,9 @@ fun Greeting(fontSize: Float) {
 
         Button(onClick = {
 
-        }) {
+        }, colors = ButtonDefaults.buttonColors(
+            containerColor = Color(buttonColor.toColorInt())
+        )) {
             Text("Shop List",
                 fontSize = fontSize.sp)
         }
@@ -81,7 +84,9 @@ fun Greeting(fontSize: Float) {
         Button(onClick = {
             val intent = Intent(context, SettingActivity::class.java)
             context.startActivity(intent)
-        }) {
+        },colors = ButtonDefaults.buttonColors(
+            containerColor = Color(buttonColor.toColorInt())
+        )) {
             Text("Settings",
                 fontSize = fontSize.sp)
         }
