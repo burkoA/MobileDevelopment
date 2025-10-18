@@ -1,5 +1,6 @@
 package com.example.shopmanager
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Space
 import androidx.activity.ComponentActivity
@@ -16,10 +17,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.shopmanager.ui.theme.ShopManagerTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +34,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             ShopManagerTheme {
                 Surface (modifier = Modifier.fillMaxSize()) {
-                    Greeting()
+                    val preferences = remember { PreferencesManager(this) }
+                    val currentFontSize = remember { mutableStateOf(preferences.getData("fontSize")) }
+
+                    Greeting(
+                        fontSize = currentFontSize.value
+                    )
                 }
             }
         }
@@ -37,7 +47,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting() {
+fun Greeting(fontSize: Float) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(16.dp),
@@ -49,6 +61,7 @@ fun Greeting() {
 
         Text(
             text = "Welcome to Shop Manager!",
+            fontSize = fontSize.sp
         )
         Spacer(modifier = Modifier.height(100.dp))
 
@@ -57,7 +70,8 @@ fun Greeting() {
         Button(onClick = {
 
         }) {
-            Text("Shop List")
+            Text("Shop List",
+                fontSize = fontSize.sp)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -65,9 +79,11 @@ fun Greeting() {
         // Settings Button
 
         Button(onClick = {
-
+            val intent = Intent(context, SettingActivity::class.java)
+            context.startActivity(intent)
         }) {
-            Text("Settings")
+            Text("Settings",
+                fontSize = fontSize.sp)
         }
     }
 }
