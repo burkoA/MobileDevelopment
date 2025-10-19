@@ -69,7 +69,8 @@ fun Greeting(fontSize: Float, buttonColor: String) {
         // List Button
 
         Button(onClick = {
-
+            val intent = Intent(context, ShoppingActivity::class.java)
+            context.startActivity(intent)
         }, colors = ButtonDefaults.buttonColors(
             containerColor = Color(buttonColor.toColorInt())
         )) {

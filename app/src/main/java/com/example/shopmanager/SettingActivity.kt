@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
@@ -106,7 +107,10 @@ fun Greeting2() {
                 label = {
                     Text("Change font size",
                         fontSize = currentFontSize.value.sp)
-                }
+                },
+                modifier = Modifier
+                    .height(56.dp)
+                    .width(180.dp)
             )
 
             Button(onClick = {
@@ -202,7 +206,9 @@ fun Greeting2() {
         Spacer(Modifier.height(10.dp))
 
         Button(onClick = {
-
+            val intent = Intent(context, ShoppingActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            context.startActivity(intent)
         },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(currentButtonColor.value.toColorInt())

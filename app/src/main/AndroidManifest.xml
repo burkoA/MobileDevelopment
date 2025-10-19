@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopManager">
         <activity
+            android:name=".ShoppingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_shopping"
+            android:theme="@style/Theme.ShopManager" />
+        <activity
             android:name=".SettingActivity"
             android:exported="false"
             android:label="@string/title_activity_setting"
@@ -27,6 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name=".provider.ProductProvider"
+            android:authorities="com.example.shopmanager.provider"
+            android:exported="false" />
     </application>
 
 </manifest>
