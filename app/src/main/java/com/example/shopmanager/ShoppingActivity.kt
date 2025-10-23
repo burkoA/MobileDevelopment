@@ -186,7 +186,7 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
         )
 
         LazyColumn(
-            modifier = Modifier.heightIn(max = 400.dp)
+            modifier = Modifier.heightIn(max = 300.dp)
                 .fillMaxWidth()
         )
         {
