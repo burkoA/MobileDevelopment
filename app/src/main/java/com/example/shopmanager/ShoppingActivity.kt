@@ -1,8 +1,11 @@
 package com.example.shopmanager
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -41,21 +44,32 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.example.shopmanager.broadcast.ProductBroadcastReceiver
 import com.example.shopmanager.database.DBHandler
 import com.example.shopmanager.model.Product
 import com.example.shopmanager.provider.ProductProvider
 import com.example.shopmanager.ui.theme.ui.theme.ShopManagerTheme
+import android.os.Build
+import android.content.Context.RECEIVER_NOT_EXPORTED
 
 class ShoppingActivity : ComponentActivity() {
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val receiver = ProductBroadcastReceiver()
+        val filter = IntentFilter("com.example.shopmanager.NEW_PRODUCT_ADDED")
+
+        registerReceiver(receiver, filter)
+
         setContent {
             ShopManagerTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val preferences = remember { PreferencesManager(this) }
                     val currentFontSize = remember { mutableStateOf(preferences.getFontSize("fontSize")) }
                     val currentButtonColor = remember { mutableStateOf(preferences.getButtonColor("buttonColor")) }
+
                     Greeting3(
                         fontSize = currentFontSize.value,
                         buttonColor = currentButtonColor.value
@@ -64,6 +78,7 @@ class ShoppingActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
 @Composable
@@ -166,6 +181,22 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
                         }
 
                         context.contentResolver.insert(ProductProvider.CONTENT_URI, product)
+
+                        val intent = Intent("com.example.shopmanager.NEW_PRODUCT_ADDED").apply {
+                            putExtra("productName", productName)
+                            putExtra("price", price)
+                            putExtra("count", count)
+                            putExtra("isBought", isBought)
+                        }
+
+                        //context.sendBroadcast(intent)
+
+                        intent.component = ComponentName(
+                            "com.example.regestrationofbroadcastreceiver",
+                            "com.example.regestrationofbroadcastreceiver.ProductReceiver"
+                        )
+
+                        context.sendBroadcast(intent)
 
                         (context as? Activity)?.recreate()
                     }, colors = ButtonDefaults.buttonColors(
