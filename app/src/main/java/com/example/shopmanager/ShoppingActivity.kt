@@ -51,6 +51,13 @@ import com.example.shopmanager.provider.ProductProvider
 import com.example.shopmanager.ui.theme.ui.theme.ShopManagerTheme
 import android.os.Build
 import android.content.Context.RECEIVER_NOT_EXPORTED
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.shopmanager.database.RealtimeDBRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.launch
 
 class ShoppingActivity : ComponentActivity() {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -83,33 +90,55 @@ class ShoppingActivity : ComponentActivity() {
 
 @Composable
 fun Greeting3(fontSize: Float, buttonColor : String) {
+
     val context = LocalContext.current
-    val dbHelper = DBHandler(context)
-    val productList = remember { dbHelper.getAllProducts() }
+
+    val user = FirebaseAuth.getInstance().currentUser
+    if (user != null) {
+         val repo = remember { RealtimeDBRepository(user.uid) }
+    } else {
+        Toast.makeText(context,"User is null", Toast.LENGTH_LONG).show()
+    }
+
+    var productList by remember { mutableStateOf(listOf<Product>()) }
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var count by remember { mutableStateOf("") }
     var isBought by remember { mutableStateOf(false) }
-    val cursor = context.contentResolver.query(
-        ProductProvider.CONTENT_URI,
-        null,
-        null,
-        null,
-        null
-    )
 
-    val products = mutableListOf<Product>()
-    cursor?.use {
-        while (it.moveToNext()) {
-            val id = it.getInt(it.getColumnIndexOrThrow("id"))
-            val name = it.getString(it.getColumnIndexOrThrow("productName"))
-            val price = it.getDouble(it.getColumnIndexOrThrow("price"))
-            val count = it.getInt(it.getColumnIndexOrThrow("count"))
-            val isBought = it.getInt(it.getColumnIndexOrThrow("isBought")) == 1
+    val scope = rememberCoroutineScope()
 
-            products.add(Product(id, name, price, count, isBought))
+    LaunchedEffect(true) {
+        scope.launch {
+            try {
+                val repo = RealtimeDBRepository(user?.uid ?: "Error")
+                productList = repo.getProducts()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
+
+//    val cursor = context.contentResolver.query(
+//        ProductProvider.CONTENT_URI,
+//        null,
+//        null,
+//        null,
+//        null
+//    )
+//
+//    val products = mutableListOf<Product>()
+//    cursor?.use {
+//        while (it.moveToNext()) {
+//            val id = it.getInt(it.getColumnIndexOrThrow("id"))
+//            val name = it.getString(it.getColumnIndexOrThrow("productName"))
+//            val price = it.getDouble(it.getColumnIndexOrThrow("price"))
+//            val count = it.getInt(it.getColumnIndexOrThrow("count"))
+//            val isBought = it.getInt(it.getColumnIndexOrThrow("isBought")) == 1
+//
+//            products.add(Product(id, name, price, count, isBought))
+//        }
+//    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -173,32 +202,50 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
             Row {
                 Button(
                     onClick = {
-                        val product = ContentValues().apply {
-                            put("productName", productName)
-                            put("price", price)
-                            put("count", count)
-                            put("isBought", isBought)
-                        }
-
-                        context.contentResolver.insert(ProductProvider.CONTENT_URI, product)
-
-                        val intent = Intent("com.example.shopmanager.NEW_PRODUCT_ADDED").apply {
-                            putExtra("productName", productName)
-                            putExtra("price", price)
-                            putExtra("count", count)
-                            putExtra("isBought", isBought)
-                        }
-
+//                        val product = ContentValues().apply {
+//                            put("productName", productName)
+//                            put("price", price)
+//                            put("count", count)
+//                            put("isBought", isBought)
+//                        }
+//                        context.contentResolver.insert(ProductProvider.CONTENT_URI, product)
+                        // Broadcast Sender
+//                        val intent = Intent("com.example.shopmanager.NEW_PRODUCT_ADDED").apply {
+//                            putExtra("productName", productName)
+//                            putExtra("price", price)
+//                            putExtra("count", count)
+//                            putExtra("isBought", isBought)
+//                        }
                         //context.sendBroadcast(intent)
+//                        intent.component = ComponentName(
+//                            "com.example.regestrationofbroadcastreceiver",
+//                            "com.example.regestrationofbroadcastreceiver.ProductReceiver"
+//                        )
+//
+//                        context.sendBroadcast(intent)
 
-                        intent.component = ComponentName(
-                            "com.example.regestrationofbroadcastreceiver",
-                            "com.example.regestrationofbroadcastreceiver.ProductReceiver"
-                        )
+                        scope.launch {
+                            try {
+                                val product = Product(
+                                    productName = productName,
+                                    price = price.toDoubleOrNull() ?: 0.0,
+                                    count = count.toIntOrNull() ?: 0,
+                                    isBought = isBought
+                                )
+                                val repo = RealtimeDBRepository(user?.uid ?: "Error")
+                                repo.addProduct(product)
+                                productList = repo.getProducts()
 
-                        context.sendBroadcast(intent)
+                                productName = ""
+                                price = ""
+                                count = ""
+                                isBought = false
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
 
-                        (context as? Activity)?.recreate()
+                        //(context as? Activity)?.recreate()
                     }, colors = ButtonDefaults.buttonColors(
                         containerColor = Color(buttonColor.toColorInt())
                     )
@@ -283,15 +330,22 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Button(onClick = {
-                                        val updated = Product(
-                                            id = product.id,
-                                            productName = name,
-                                            price = priceText.toDoubleOrNull() ?: 0.0,
-                                            count = countText.toIntOrNull() ?: 0,
-                                            isBought = bought
-                                        )
-                                        dbHelper.updateProduct(updated)
-                                        (context as? Activity)?.recreate()
+                                        scope.launch {
+                                            val updated = Product(
+                                                id = product.id,
+                                                productName = name,
+                                                price = priceText.toDoubleOrNull() ?: 0.0,
+                                                count = countText.toIntOrNull() ?: 0,
+                                                isBought = bought
+                                            )
+
+                                            val repo = RealtimeDBRepository(user?.uid ?: "Error")
+                                            repo.updateProduct(updated)
+                                            productList = repo.getProducts()
+                                            isEditing = false
+                                        }
+                                        //dbHelper.updateProduct(updated)
+                                        //(context as? Activity)?.recreate()
                                     }, colors = ButtonDefaults.buttonColors(
                                         containerColor = Color(buttonColor.toColorInt())
                                     )) {
@@ -337,8 +391,17 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
                                     }
                                     Button(
                                         onClick = {
-                                            product.id?.let { dbHelper.deleteProduct(it) }
-                                            (context as? Activity)?.recreate()
+                                            val productId = product.id  // <- store the ID
+
+                                            productId?.let { id ->
+                                                scope.launch {
+                                                    val repo = RealtimeDBRepository(user?.uid ?: "Error")
+                                                    product.id?.let { repo.deleteProduct(it) }
+                                                    productList = repo.getProducts()
+                                                }
+                                            }
+//                                            product.id?.let { dbHelper.deleteProduct(it) }
+//                                            (context as? Activity)?.recreate()
                                         },
                                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                                     ) {

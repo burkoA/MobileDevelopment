@@ -52,28 +52,28 @@ class DBHandler(context: Context)
         return id
     }
 
-    fun getAllProducts(): List<Product> {
-        val productList = mutableListOf<Product>()
-        val db = readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
-
-        if (cursor.moveToFirst()) {
-            do {
-                val product = Product(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
-                    productName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
-                    price = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRICE)),
-                    count = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_COUNT)),
-                    isBought = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_BOUGHT)) == 1
-                )
-                productList.add(product)
-            } while (cursor.moveToNext())
-        }
-
-        cursor.close()
-        db.close()
-        return productList
-    }
+//    fun getAllProducts(): List<Product> {
+//        val productList = mutableListOf<Product>()
+//        val db = readableDatabase
+//        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//                val product = Product(
+//                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+//                    productName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+//                    price = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRICE)),
+//                    count = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_COUNT)),
+//                    isBought = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_BOUGHT)) == 1
+//                )
+//                productList.add(product)
+//            } while (cursor.moveToNext())
+//        }
+//
+//        cursor.close()
+//        db.close()
+//        return productList
+//    }
 
     fun deleteProduct(id: Int): Int {
         val db = writableDatabase

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.example.shopmanager.ui.theme.ShopManagerTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +90,16 @@ fun Greeting(fontSize: Float, buttonColor: String) {
             containerColor = Color(buttonColor.toColorInt())
         )) {
             Text("Settings",
+                fontSize = fontSize.sp)
+        }
+
+        Button(onClick = {
+            FirebaseAuth.getInstance().signOut()
+            context.startActivity(Intent(context, AuthActivity::class.java))
+        },colors = ButtonDefaults.buttonColors(
+            containerColor = Color(buttonColor.toColorInt())
+        )) {
+            Text("Logout",
                 fontSize = fontSize.sp)
         }
     }

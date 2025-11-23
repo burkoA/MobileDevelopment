@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "801707272440",
+    "project_id": "comexampleshopmanager",
+    "storage_bucket": "comexampleshopmanager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801707272440:android:0a9eaf0528a1f9f75f730d",
+        "android_client_info": {
+          "package_name": "com.example.shopmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrFUUYNy1xutTeWiF_rRouyE5rP6fKoKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

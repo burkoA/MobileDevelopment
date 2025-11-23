@@ -1,9 +1,9 @@
 package com.example.shopmanager.model
 
 data class Product(
-    val id: Int? = null,
-    val productName: String,
-    val price: Double,
-    val count: Int,
-    val isBought: Boolean
+    var id: String? = "",
+    var productName: String = "",
+    var price: Double = 0.0,
+    var count: Int = 0,
+    var isBought: Boolean = false
 )
