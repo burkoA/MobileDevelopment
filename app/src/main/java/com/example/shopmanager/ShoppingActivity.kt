@@ -105,16 +105,20 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
     var price by remember { mutableStateOf("") }
     var count by remember { mutableStateOf("") }
     var isBought by remember { mutableStateOf(false) }
+    var showAllProducts by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(true) {
-        scope.launch {
-            try {
-                val repo = RealtimeDBRepository(user?.uid ?: "Error")
-                productList = repo.getProducts()
-            } catch (e: Exception) {
-                e.printStackTrace()
+    LaunchedEffect(showAllProducts) {
+        val repo = RealtimeDBRepository(user?.uid ?: "Error")
+
+        if (showAllProducts) {
+            repo.listenToAllProducts { products ->
+                productList = products
+            }
+        } else {
+            repo.listenToMyProducts { products ->
+                productList = products
             }
         }
     }
@@ -234,7 +238,6 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
                                 )
                                 val repo = RealtimeDBRepository(user?.uid ?: "Error")
                                 repo.addProduct(product)
-                                productList = repo.getProducts()
 
                                 productName = ""
                                 price = ""
@@ -262,6 +265,18 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
             "Product List",
             fontSize = fontSize.sp
         )
+
+        Button(
+            onClick = { showAllProducts = !showAllProducts },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(buttonColor.toColorInt())
+            )
+        ) {
+            Text(
+                if (showAllProducts) "Show My Products" else "Show All Products",
+                fontSize = fontSize.sp
+            )
+        }
 
         LazyColumn(
             modifier = Modifier.heightIn(max = 300.dp)
@@ -341,7 +356,6 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
 
                                             val repo = RealtimeDBRepository(user?.uid ?: "Error")
                                             repo.updateProduct(updated)
-                                            productList = repo.getProducts()
                                             isEditing = false
                                         }
                                         //dbHelper.updateProduct(updated)
@@ -397,7 +411,6 @@ fun Greeting3(fontSize: Float, buttonColor : String) {
                                                 scope.launch {
                                                     val repo = RealtimeDBRepository(user?.uid ?: "Error")
                                                     product.id?.let { repo.deleteProduct(it) }
-                                                    productList = repo.getProducts()
                                                 }
                                             }
 //                                            product.id?.let { dbHelper.deleteProduct(it) }
