@@ -3,4 +3,6 @@
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_shopping">ShoppingActivity</string>
     <string name="title_activity_auth">AuthActivity</string>
+    <string name="title_activity_shops">ShopsActivity</string>
+    <string name="title_activity_shops_map">ShopsMapActivity</string>
 </resources>

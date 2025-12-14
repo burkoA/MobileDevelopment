@@ -102,5 +102,13 @@ fun Greeting(fontSize: Float, buttonColor: String) {
             Text("Logout",
                 fontSize = fontSize.sp)
         }
+
+        Button(onClick = {
+            context.startActivity(Intent(context, ShopsActivity::class.java))
+        }, colors = ButtonDefaults.buttonColors(
+            containerColor = Color(buttonColor.toColorInt())
+        )) {
+            Text("Favorite shops", fontSize = fontSize.sp)
+        }
     }
 }

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +16,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopManager">
+        <receiver
+            android:name=".broadcast.GeofenceReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <activity
+            android:name=".ShopsMapActivity"
+            android:exported="false"
+            android:label="@string/title_activity_shops_map"
+            android:theme="@style/Theme.ShopManager" />
+        <activity
+            android:name=".ShopsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_shops"
+            android:theme="@style/Theme.ShopManager" />
         <activity
             android:name=".AuthActivity"
             android:exported="true"
@@ -38,8 +56,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.ShopManager">
-        </activity>
+            android:theme="@style/Theme.ShopManager" />
 
         <provider
             android:name=".provider.ProductProvider"
@@ -47,7 +64,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".broadcast.ProductBroadcastReceiver"
+            android:name=".broadcast.GeofenceReceiver"
             android:enabled="true"
             android:exported="true" />
     </application>
