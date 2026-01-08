@@ -41,6 +41,10 @@ android {
 }
 
 dependencies {
+    implementation("androidx.glance:glance-appwidget:1.0.0")
+    implementation("androidx.glance:glance-material3:1.0.0")
+    implementation("androidx.media:media:1.7.0")
+    implementation("com.google.mlkit:object-detection:17.0.1")
     implementation("com.mapbox.maps:android-ndk27:11.17.0")
     implementation("com.mapbox.extension:maps-compose-ndk27:11.17.0")
     implementation(libs.androidx.core.ktx)
